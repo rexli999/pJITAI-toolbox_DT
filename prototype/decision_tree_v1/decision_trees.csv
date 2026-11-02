@@ -1,0 +1,27 @@
+page,id,kind,from,to,label,detail,order,tone
+intercept,start,decision,,,Variables standardization,"Whether all covariates and the proximal outcome provided to the personalization algorithm are approximately standardized (so average value of each standardized covariate/proximal outcome is roughly close to 0 and the standard deviation of each standardized covariate/proximal outcome is roughly 1).
+
+**Note:** once the algorithm is deployed, the proximal outcome Y must be standardized with the *same* mean and variance used in the original MRT analysis. Do not recalculate them from post-deployment data.",
+intercept,method_choice,decision,,,Method Determination,"There are two ways to set the prior for the intercept, α~0~. They differ in how much work they take and how closely the prior is tailored to your own intervention design.",
+intercept,stop,instruction,,,Stop 😵,Standardize each covariate and the proximal outcome before setting priors: subtract its sample mean in the MRT data and divide by its sample standard deviation. Then come back to this page.,
+intercept,simple,decision,,,Strength of Prior,"The strength of prior determines how soon the accruing data determine which intervention option is delivered.
+
+[TODO: add an outbound link to a page that helps build intuition of this value]",
+intercept,complex,instruction,,,Fit participant-specific regression models using MRT data,"If a person does not have a minimum number of decision points, you might use [ridge regression](https://en.wikipedia.org/wiki/Ridge_regression).
+
+[TODO: add an outbound link to a code tutorial]",
+intercept,strong,instruction,,,"Generic weakly informative prior:
+Set prior dist 
+N(0, 1)",,
+intercept,weak,instruction,,,"Weakly informative prior:
+Set prior dist 
+N(0, 10)",,
+intercept,mrt_prior,instruction,,,Set the prior from the intercept estimates of the MRT regression models,"- **Prior mean:** proxied by the average of the estimated intercepts across individuals.
+- **Prior variance:** proxied by the sample variance of the intercept coefficients.",
+intercept,,edge,start,method_choice,Standardized,,2
+intercept,,edge,start,stop,Not standardized,Standardize your variables before setting priors.,1
+intercept,,edge,method_choice,simple,Simpler yet less tailored to your own intervention design,"Use a standard default prior. Quick, but less tailored to your own intervention design.",1,green
+intercept,,edge,method_choice,complex,More complex ⚠️ yet more tailored to your own intervention design,Derive the prior from MRT data. More tailored to your own intervention design; work with your collaborating data scientist. This method was used by the Murphy Lab in the past HeartSteps pJITAI study.,2,orange
+intercept,,edge,simple,strong,Stronger prior,,1
+intercept,,edge,simple,weak,Weaker prior,,2
+intercept,,edge,complex,mrt_prior,,,

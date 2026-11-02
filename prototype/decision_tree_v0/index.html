@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decision Tree Prototype v0</title>
+<link rel="stylesheet" href="decision_tree.css">
+<style>
+  /* Page chrome that mimics the toolbox layout; not part of the component */
+  :root { --page-bg: #f4f7fa; --card-bg: #ffffff; --card-text: #3f4d67; --muted: #888; }
+  body.dark { --page-bg: #1d222d; --card-bg: #2b3140; --card-text: #e5e7eb; --muted: #9ca3af; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-bg);
+    color: var(--card-text);
+    font-family: "Open Sans", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #3f4d67;
+    color: #fff;
+  }
+  header h1 { margin: 0; font-size: 16px; font-weight: 600; }
+  header .spacer { flex: 1; }
+  header select, header button {
+    font: inherit;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: #fff;
+  }
+  header select option { color: #000; }
+  .grid { display: grid; grid-template-columns: 3.5fr 1.1fr; gap: 16px; padding: 16px; }
+  .card { background: var(--card-bg); border-radius: 5px; padding: 16px 20px; margin-bottom: 16px;
+          box-shadow: 0 1px 20px rgba(69, 90, 100, 0.08); }
+  .card h2 { margin: 0 0 4px; font-size: 20px; }
+  .card h3 { margin: 0 0 12px; font-size: 18px; }
+  .muted { color: var(--muted); }
+  .mock-form { display: flex; gap: 16px; flex-wrap: wrap; }
+  .mock-form label { display: block; font-size: 13px; margin-bottom: 4px; }
+  .mock-form input { width: 160px; padding: 6px 8px; border: 1px solid #ccd3dd; border-radius: 4px;
+                     background: var(--page-bg); color: inherit; }
+  .comments { min-height: 200px; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .comments { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>pJITAI Toolbox · Decision tree prototype v0</h1>
+  <span class="spacer"></span>
+  <select id="page-select" aria-label="Page"></select>
+  <button type="button" id="theme-toggle">Dark mode</button>
+</header>
+
+<div class="grid">
+  <main>
+    <div class="card">
+      <h2 id="page-title"></h2>
+      <div class="muted">Model Settings (mock page for layout only)</div>
+    </div>
+    <div class="card">
+      <div class="mock-form">
+        <div><label>Prior mean</label><input disabled placeholder="0"></div>
+        <div><label>Prior standard deviation</label><input disabled placeholder="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Resources</h3>
+      <div class="dt-wrap">
+        <div class="dt-canvas-col">
+          <div class="dt-toolbar">
+            <button type="button" class="dt-btn dt-btn-secondary" id="dt-reset">Reset</button>
+            <button type="button" class="dt-btn dt-btn-secondary" id="dt-fit">Fit</button>
+            <button type="button" class="dt-btn dt-btn-secondary" id="dt-zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" class="dt-btn dt-btn-secondary" id="dt-zoom-out" aria-label="Zoom out">−</button>
+            <div class="dt-legend">
+              <span class="dt-legend-decision">Decision</span>
+              <span class="dt-legend-instruction">Step</span>
+            </div>
+          </div>
+          <div class="dt-canvas" id="dt-canvas" role="img" aria-label="Decision tree diagram"></div>
+        </div>
+        <aside class="dt-detail" id="dt-detail" aria-live="polite"></aside>
+      </div>
+    </div>
+  </main>
+  <aside class="card comments">
+    <h3>Comments</h3>
+    <div class="muted">(placeholder for the toolbox's comments column)</div>
+  </aside>
+</div>
+
+<script src="vendor/cytoscape.min.js"></script>
+<script src="vendor/dagre.min.js"></script>
+<script src="vendor/cytoscape-dagre.js"></script>
+<script src="trees.js"></script>
+<script src="decision_tree.js"></script>
+<script>
+  (function () {
+    var TITLES = {
+      standardized_proximal_outcome: 'Proximal Outcome Attribute',
+      covariates: 'Covariates Define',
+      intercept: 'Intercept',
+      covariate_main_effect: 'Covariates Main Effect',
+      main_treatment_effect: 'Main Treatment Effect',
+      covariate_interaction_effect: 'Covariates Interaction Effect',
+      main_error: 'Error'
+    };
+    var pageSelect = document.getElementById('page-select');
+    var current;
+
+    Object.keys(window.TREES).forEach(function (page) {
+      pageSelect.add(new Option(TITLES[page] || page, page));
+    });
+
+    function show(page) {
+      if (current) current.destroy();
+      document.getElementById('page-title').textContent = TITLES[page] || page;
+      current = renderDecisionTree(document.getElementById('dt-canvas'), window.TREES[page],
+                                   document.getElementById('dt-detail'));
+    }
+
+    pageSelect.addEventListener('change', function () { show(pageSelect.value); });
+    document.getElementById('dt-reset').onclick = function () { current.reset(); };
+    document.getElementById('dt-fit').onclick = function () { current.fit(); };
+    document.getElementById('dt-zoom-in').onclick = function () { current.zoomBy(1.2); };
+    document.getElementById('dt-zoom-out').onclick = function () { current.zoomBy(1 / 1.2); };
+    document.getElementById('theme-toggle').onclick = function () {
+      var dark = document.body.classList.toggle('dark');
+      this.textContent = dark ? 'Light mode' : 'Dark mode';
+    };
+
+    show(pageSelect.value);
+  })();
+</script>
+</body>
+</html>

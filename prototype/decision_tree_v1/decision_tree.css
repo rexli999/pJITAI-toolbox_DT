@@ -1,0 +1,305 @@
+/* Decision tree component (Resources section). Colours are read by decision_tree.js too. */
+:root {
+  --dt-bg: #ffffff;
+  --dt-text: #1f2937;
+  --dt-muted: #6b7280;
+  --dt-border: #e3e7ed;
+  --dt-panel-bg: #f7f9fb;
+  --dt-decision-bg: #fff4e0;
+  --dt-decision-border: #f0a020;
+  --dt-instruction-bg: #e8f6fe;
+  --dt-instruction-border: #04a9f5;
+  --dt-edge: #9aa3b2;
+  --dt-edge-text: #374151;
+  --dt-highlight: #022658;
+  --dt-tone-green-bg: #eaf6ee;
+  --dt-tone-green-border: #8fcca3;
+  --dt-tone-orange-bg: #fdeee4;
+  --dt-tone-orange-border: #f0a982;
+}
+
+body.dark {
+  --dt-bg: #2b3140;
+  --dt-text: #e5e7eb;
+  --dt-muted: #9ca3af;
+  --dt-border: #3d4456;
+  --dt-panel-bg: #242a37;
+  --dt-decision-bg: #4a3a1c;
+  --dt-decision-border: #f5b942;
+  --dt-instruction-bg: #163a4f;
+  --dt-instruction-border: #38bdf8;
+  --dt-edge: #7b8496;
+  --dt-edge-text: #d1d5db;
+  --dt-highlight: #7dd3fc;
+  --dt-tone-green-bg: #1f3b2b;
+  --dt-tone-green-border: #3f8a5c;
+  --dt-tone-orange-bg: #42291d;
+  --dt-tone-orange-border: #b5653d;
+}
+
+.dt-wrap {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  color: var(--dt-text);
+}
+
+.dt-canvas-col {
+  flex: 0 0 63%;
+  min-width: 0;
+}
+
+.dt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.dt-legend {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--dt-muted);
+}
+
+.dt-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  vertical-align: -2px;
+  border: 2px solid;
+  border-radius: 3px;
+}
+
+.dt-legend .dt-legend-decision::before {
+  background: var(--dt-decision-bg);
+  border-color: var(--dt-decision-border);
+}
+
+.dt-legend .dt-legend-instruction::before {
+  background: var(--dt-instruction-bg);
+  border-color: var(--dt-instruction-border);
+}
+
+.dt-canvas {
+  width: 100%;
+  height: 400px;
+  background: var(--dt-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 6px;
+}
+
+.dt-detail {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+  background: var(--dt-panel-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 6px;
+  position: sticky;
+  top: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dt-detail-empty {
+  color: var(--dt-muted);
+}
+
+.dt-detail-kind {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid;
+}
+
+.dt-kind-decision {
+  background: var(--dt-decision-bg);
+  border-color: var(--dt-decision-border);
+}
+
+.dt-kind-instruction {
+  background: var(--dt-instruction-bg);
+  border-color: var(--dt-instruction-border);
+}
+
+.dt-detail-title {
+  margin: 8px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--dt-text);
+}
+
+.dt-detail-via {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--dt-highlight);
+  background: var(--dt-bg);
+  font-size: 13px;
+}
+
+.dt-detail-body a,
+.dt-option-desc a {
+  color: var(--dt-instruction-border);
+}
+
+/* Markdown output from csv_to_trees.py: paragraphs, lists, code */
+.dt-detail-body p,
+.dt-option-desc p {
+  margin: 0 0 10px;
+}
+
+.dt-detail-body ul,
+.dt-detail-body ol,
+.dt-option-desc ul,
+.dt-option-desc ol {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.dt-detail-body li + li,
+.dt-option-desc li + li {
+  margin-top: 4px;
+}
+
+.dt-detail-body > :last-child,
+.dt-option-desc > :last-child {
+  margin-bottom: 0;
+}
+
+.dt-detail-body code,
+.dt-option-desc code {
+  padding: 1px 4px;
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  background: var(--dt-bg);
+  font-size: 12px;
+}
+
+.dt-detail-next {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dt-border);
+}
+
+.dt-detail-next-title,
+.dt-detail-end {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dt-muted);
+}
+
+.dt-btn {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1px solid var(--dt-instruction-border);
+  border-radius: 4px;
+  background: var(--dt-instruction-border);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dt-btn:hover {
+  filter: brightness(0.92);
+}
+
+.dt-btn-secondary {
+  background: transparent;
+  color: var(--dt-text);
+  border-color: var(--dt-border);
+}
+
+.dt-option {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: var(--dt-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Edge 'tone' from the CSV: matches the tint of the arrow label in the diagram.
+   Before the hover/focus rules so those still win. */
+.dt-tone-green {
+  background: var(--dt-tone-green-bg);
+  border-color: var(--dt-tone-green-border);
+}
+
+.dt-tone-orange {
+  background: var(--dt-tone-orange-bg);
+  border-color: var(--dt-tone-orange-border);
+}
+
+.dt-detail-via.dt-tone-green,
+.dt-detail-via.dt-tone-orange {
+  border-color: var(--dt-highlight);
+}
+
+.dt-option:hover,
+.dt-option-focus {
+  border-color: var(--dt-highlight);
+}
+
+.dt-option-focus {
+  box-shadow: inset 3px 0 0 var(--dt-highlight);
+}
+
+.dt-option-label {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dt-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dt-option-desc {
+  margin-top: 4px;
+  color: var(--dt-muted);
+  font-size: 13px;
+}
+
+.dt-back {
+  display: block;
+  margin: -4px 0 10px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--dt-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dt-back:hover {
+  color: var(--dt-text);
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .dt-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dt-detail {
+    position: static;
+  }
+}
