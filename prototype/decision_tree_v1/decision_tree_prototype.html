@@ -4662,7 +4662,7 @@ window.TREES = {
         "id": "start",
         "kind": "decision",
         "label": "Variables standardization",
-        "detail": "<p>Whether all covariates and the proximal outcome provided to the personalization algorithm are approximately standardized (so average value of each standardized covariate/proximal outcome is roughly close to 0 and the standard deviation of each standardized covariate/proximal outcome is roughly 1).<\/p><p><b>Note:<\/b> once the algorithm is deployed, the proximal outcome Y must be standardized with the <i>same<\/i> mean and variance used in the original MRT analysis. Do not recalculate them from post-deployment data.<\/p>"
+        "detail": "<p>Have all covariates and the proximal outcome been approximately standardized so that each variable has a mean close to 0 and a standard deviation close to 1?<\/p><p><b>Note:<\/b> once the algorithm is deployed, the proximal outcome and covariates must be standardized with the same mean and variance used in the original MRT analysis. Do not recalculate them from post-deployment data.<\/p>"
       },
       {
         "id": "method_choice",
@@ -4674,31 +4674,31 @@ window.TREES = {
         "id": "stop",
         "kind": "instruction",
         "label": "Stop 😵",
-        "detail": "Standardize each covariate and the proximal outcome before setting priors: subtract its sample mean in the MRT data and divide by its sample standard deviation. Then come back to this page."
+        "detail": "<p>Standardize your data before setting priors.<\/p><p>Apply z-score standardization to each continuous <b>covariate<\/b> and continuous <b>proximal outcome<\/b>: subtract the variable's sample mean calculated from the MRT data and divide by its sample standard deviation.<\/p><p>Binary variables do not need to be standardized and can remain coded as 0 and 1.<\/p><p>Once standardization is complete, return to this page to set your priors.<\/p>"
       },
       {
         "id": "simple",
         "kind": "decision",
         "label": "Strength of Prior",
-        "detail": "<p>The strength of prior determines how soon the accruing data determine which intervention option is delivered.<\/p><p>[TODO: add an outbound link to a page that helps build intuition of this value]<\/p>"
+        "detail": "<p>The strength of prior determines how soon the accruing data determine which intervention option is delivered. A <b>smaller<\/b> Prior Standard Deviation gives more weight to prior knowledge derived from the MRT, so intervention decisions will change more cautiously. This may be appropriate when you have strong confidence in the prior knowledge. Conversely, a <b>larger<\/b> Prior Standard Deviation allows the algorithm to personalize intervention decisions more quickly based on each participant's data, but may make these decisions more sensitive to noise, especially early in the intervention.<\/p><p>If you are unsure what value to choose, a <b>weakly informative prior<\/b> might be a reasonable starting point. This choice of prior standard deviation is viewed as flexible enough to let the data speak for itself while providing robustness to errors when the amount of data is small.<\/p><p>For more detailed guidance, see the <a href=\"https://github.com/stan-dev/stan/wiki/prior-choice-recommendations\">Stan Prior Choice Recommendations<\/a>.<\/p>"
       },
       {
         "id": "complex",
         "kind": "instruction",
         "label": "Fit participant-specific regression models using MRT data",
-        "detail": "<p>If a person does not have a minimum number of decision points, you might use <a href=\"https://en.wikipedia.org/wiki/Ridge_regression\">ridge regression<\/a>.<\/p><p>[TODO: add an outbound link to a code tutorial]<\/p>"
+        "detail": "<p>To obtain prior means and standard deviations, we suggest you fit person-specific regression models, one per person in the MRT data (using approximately standardized covariates and proximal outcome). If a person does not have a minimum number of decision points, you might use <a href=\"https://en.wikipedia.org/wiki/Ridge_regression\">ridge regression<\/a>. The estimators as well as their variability across the individual person-specific regression can be used to inform the prior.<\/p><p>For a step-by-step walkthrough, see the <a href=\"https://example.com/pjitai-prior-tutorial\">code tutorial on fitting person-specific regression models<\/a>.<\/p>"
       },
       {
         "id": "strong",
         "kind": "instruction",
-        "label": "Generic weakly informative prior:\nSet prior dist \nN(0, 1)",
-        "detail": ""
+        "label": "Generic weakly informative prior:\nSet prior dist\nN(0, 1)",
+        "detail": "Set the <b>Prior Mean<\/b> to 0 and the <b>Prior Standard Deviation<\/b> to 1."
       },
       {
         "id": "weak",
         "kind": "instruction",
-        "label": "Weakly informative prior:\nSet prior dist \nN(0, 10)",
-        "detail": ""
+        "label": "Weakly informative prior:\nSet prior dist\nN(0, 10)",
+        "detail": "Set the <b>Prior Mean<\/b> to 0 and the <b>Prior Standard Deviation<\/b> to 3.16."
       },
       {
         "id": "mrt_prior",
